@@ -7,7 +7,7 @@ import pickle
 import os
 
 # Load dataset
-df = pd.read_csv('E:/NM/Project/project/datasets/dataset.csv')
+df = pd.read_csv(r'D:/NMProject/final-medbot-1/datasets/dataset.csv')
 
 # Fill missing values/
 df = df.fillna('')  # Replace NaNs with empty strings
