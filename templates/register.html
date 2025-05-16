@@ -1,63 +1,91 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - MedBot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>MedBot Register</h1>
-        <form method="POST" action="/register">
-            <label for="username">Username:</label><br>
-            <input type="text" id="username" name="username" required><br>
-            <label for="password">Password:</label><br>
-            <input type="password" id="password" name="password" required><br><br>
-            <button type="submit">Register</button>
-        </form>
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
-        <p>Already have an account? <a href="/">Login</a></p>
+        <header class="login-header">
+            <img src="{{ url_for('static', filename='caduceus.png') }}" alt="Caduceus" class="logo">
+            <h1>Register</h1>
+        </header>
+        <main>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <form method="POST" action="{{ url_for('register') }}">
+                <div class="form-row">
+                    <label for="username">Username <span class="mandatory"></span></label>
+                    <input type="text" id="username" name="username" value="{{ username }}" required>
+                </div>
+                <div class="form-row">
+                    <label for="email">Email <span class="mandatory"></span></label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-row">
+                    <label for="password">Password <span class="mandatory"></span></label>
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-password"></i>
+                    </div>
+                    <p class="password-restrictions">Password must be at least 6 characters, including uppercase, lowercase, and digits (0-9).</p>
+                </div>
+                <div class="form-row">
+                    <label for="age">Age <span class="mandatory"></span></label>
+                    <input type="number" id="age" name="age" required>
+                </div>
+                <div class="form-row">
+                    <label for="gender">Gender <span class="mandatory"></span></label>
+                    <select id="gender" name="gender" required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="security_answer1">Security Question 1: What is the name of your first pet? <span class="mandatory"></span></label>
+                    <div class="password-container">
+                        <input type="password" id="security_answer1" name="security_answer1" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-security-answer1"></i>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label for="security_answer2">Security Question 2: What is the name of the city you were born in? <span class="mandatory"></span></label>
+                    <div class="password-container">
+                        <input type="password" id="security_answer2" name="security_answer2" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-security-answer2"></i>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label for="security_answer3">Security Question 3: What is the name of your favorite book? <span class="mandatory"></span></label>
+                    <div class="password-container">
+                        <input type="password" id="security_answer3" name="security_answer3" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-security-answer3"></i>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <a href="{{ url_for('index') }}" class="btn back-btn">Back</a>
+                    <input type="submit" value="Register" class="btn next-btn">
+                </div>
+            </form>
+            <p class="centered">
+                Already have an account? <a href="{{ url_for('login') }}">Login</a>
+            </p>
+        </main>
     </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

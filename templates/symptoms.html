@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptoms - MedBot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="{{ url_for('static', filename='caduceus.png') }}" alt="Caduceus" class="logo">
+            <h1>Select Symptoms</h1>
+            <nav>
+                <div class="header-right">
+                    <button class="dark-mode-toggle">🌙</button>
+                    <div class="menu-icon">☰</div>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                    <li><a href="{{ url_for('dashboard') }}">View Reports</a></li>
+                    <li><a href="{{ url_for('symptoms') }}">New Diagnosis</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <p class="encouragement">Let's identify your symptoms to provide the best diagnosis.</p>
+            <form method="POST" action="{{ url_for('symptoms') }}">
+                <div class="symptoms-grid">
+                    {% for symptom in symptoms %}
+                        <label class="symptom-checkbox">
+                            <input type="checkbox" name="symptoms" value="{{ symptom }}"> {{ symptom.replace('_', ' ') | capitalize }}
+                        </label>
+                    {% endfor %}
+                </div>
+                <div class="symptom-progress">
+                    <div class="progress-bar-fill"></div>
+                </div>
+                <div class="form-actions">
+                    <a href="{{ url_for('dashboard') }}" class="btn back-btn">Back</a>
+                    <input type="submit" value="Next" class="btn next-btn">
+                </div>
+            </form>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

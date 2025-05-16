@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add User - MedBot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="{{ url_for('static', filename='caduceus.png') }}" alt="Caduceus" class="logo">
+            <h1>Add User</h1>
+            <nav>
+                <div class="header-right">
+                    <button class="dark-mode-toggle">🌙</button>
+                    <div class="menu-icon">☰</div>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('admin') }}">Back to Admin Panel</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+            <form method="POST" action="{{ url_for('add_user') }}">
+                <div class="form-row">
+                    <label for="username">Username <span class="mandatory"></span></label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-row">
+                    <label for="email">Email <span class="mandatory"></span></label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-row">
+                    <label for="password">Password <span class="mandatory"></span></label>
+                    <input type="password" id="password" name="password" value="{{ suggested_password }}" required>
+                    <p class="password-restrictions">Suggested password: <span>{{ suggested_password }}</span></p>
+                </div>
+                <div class="form-row">
+                    <label for="role">Role <span class="mandatory"></span></label>
+                    <select id="role" name="role" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <a href="{{ url_for('admin') }}" class="btn back-btn">Back</a>
+                    <input type="submit" value="Add User" class="btn next-btn">
+                </div>
+            </form>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html> 

@@ -1,63 +1,56 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MedBot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>MedBot Login</h1>
-        <form method="POST" action="/login">
-            <label for="username">Username:</label><br>
-            <input type="text" id="username" name="username" required><br>
-            <label for="password">Password:</label><br>
-            <input type="password" id="password" name="password" required><br><br>
-            <button type="submit">Login</button>
-        </form>
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
-        <p>Don't have an account? <a href="/register">Register</a></p>
+        <header class="login-header">
+            <img src="{{ url_for('static', filename='caduceus.png') }}" alt="Caduceus" class="logo">
+            <h1>Login</h1>
+        </header>
+        <main>
+            {% if current_user.is_authenticated %}
+                <p>You are already logged in. <a href="{{ url_for('dashboard') }}">Go to Dashboard</a></p>
+            {% else %}
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <ul class="flash-messages">
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="form-row">
+                        <label for="identifier">Email <span class="mandatory"></span></label>
+                        <input type="email" id="identifier" name="identifier" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="password">Password <span class="mandatory"></span></label>
+                        <input type="password" id="password" name="password" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-password"></i>
+                        <p class="password-restrictions">Password must be at least 6 characters, including uppercase, lowercase, and digits (0-9).</p>
+                    </div>
+                    <div class="form-actions">
+                        <a href="{{ url_for('index') }}" class="btn back-btn">Back</a>
+                        <input type="submit" value="Login" class="btn next-btn">
+                    </div>
+                </form>
+                <p class="centered">
+                    <a href="{{ url_for('forgot_password') }}">Forgot Password?</a> | 
+                    <a href="{{ url_for('register') }}">Register</a>
+                </p>
+            {% endif %}
+        </main>
     </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Predictions - MedBot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="{{ url_for('static', filename='caduceus.png') }}" alt="Caduceus" class="logo">
+            <h1>User Predictions</h1>
+            <nav>
+                <div class="header-right">
+                    <button class="dark-mode-toggle">🌙</button>
+                    <div class="menu-icon">☰</div>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('admin') }}">Back to Admin Panel</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <table>
+                <tr>
+                    <th>Diseases</th>
+                    <th>Symptoms</th>
+                    <th>Date</th>
+                    <th>View Report</th>
+                </tr>
+                {% for prediction in predictions %}
+                    <tr>
+                        <td>
+                            {% for disease in prediction.predicted_diseases %}
+                                {{ disease.name }} ({{ disease.accuracy | round(2) }}%)<br>
+                            {% endfor %}
+                        </td>
+                        <td>{{ prediction.symptoms | join(', ') }}</td>
+                        <td>{{ prediction.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td><a href="{{ url_for('view_report', report_id=prediction._id) }}" class="btn">View</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div class="form-actions">
+                <a href="{{ url_for('admin') }}" class="btn back-btn">Back to Admin Panel</a>
+                <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+            </div>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

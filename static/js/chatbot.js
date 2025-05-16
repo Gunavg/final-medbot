@@ -5,39 +5,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function addMessage(content, isUser) {
         const messageDiv = document.createElement("div");
-        messageDiv.classList.add("chat-message");
-        messageDiv.classList.add(isUser ? "user" : "bot");
+        messageDiv.classList.add("chat-message", isUser ? "user" : "bot");
         messageDiv.textContent = content;
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function getBotResponse(message) {
-        const lowerMessage = message.toLowerCase();
-        if (lowerMessage.includes("symptom")) {
-            return "Please go to the Symptom Checker page to select your symptoms.";
-        } else if (lowerMessage.includes("disease")) {
-            return "I can help predict diseases based on symptoms. Visit the Symptom Checker page.";
-        } else if (lowerMessage.includes("help")) {
-            return "I'm here to assist! You can ask about symptoms, diseases, or navigate to the Symptom Checker.";
-        } else {
-            return "I'm not sure how to respond to that. Try asking about symptoms or diseases!";
-        }
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+        addMessage(message, true);
+        fetch('/chatbot_response', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            setTimeout(() => addMessage(data.response, false), 500);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            addMessage("Sorry, something went wrong. Please try again.", false);
+        });
+        chatInput.value = "";
     }
 
-    sendButton.addEventListener("click", () => {
-        const message = chatInput.value.trim();
-        if (message) {
-            addMessage(message, true);
-            const response = getBotResponse(message);
-            setTimeout(() => addMessage(response, false), 500);
-            chatInput.value = "";
-        }
+    sendButton.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
     });
 
-    chatInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-            sendButton.click();
-        }
-    });
+    // Initial welcome message
+    addMessage("Hello! I'm MedBot. How can I assist you today? Try asking about symptoms, diseases, or your dashboard.", false);
 });

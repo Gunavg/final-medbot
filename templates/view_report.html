@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnosis Report - MedBot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="{{ url_for('static', filename='caduceus.png') }}" alt="Caduceus" class="logo">
+            <h1>Diagnosis Report</h1>
+            <nav>
+                <div class="header-right">
+                    <button class="dark-mode-toggle">🌙</button>
+                    <div class="menu-icon">☰</div>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                    <li><a href="{{ url_for('dashboard') }}">View Reports</a></li>
+                    <li><a href="{{ url_for('symptoms') }}">New Diagnosis</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <h2>Diagnosis Report</h2>
+            <p><strong>Date:</strong> {{ prediction.created_at_local.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <h3>Patient Details</h3>
+            <table>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Patient</td>
+                    <td>{{ current_user.firstname }} {{ current_user.lastname }}</td>
+                </tr>
+                <tr>
+                    <td>Age</td>
+                    <td>{{ current_user.age or 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <td>Gender</td>
+                    <td>{{ current_user.gender or 'N/A' }}</td>
+                </tr>
+            </table>
+            <h3>Symptoms</h3>
+            <table>
+                <tr>
+                    <th>Symptom</th>
+                </tr>
+                {% for symptom in prediction.symptoms %}
+                <tr>
+                    <td>{{ symptom.replace('_', ' ') | capitalize }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <h3>Follow-Up Questions and Answers</h3>
+            <table>
+                <tr>
+                    <th>Question</th>
+                    <th>Answer</th>
+                </tr>
+                {% for question, answer in zipped_qa %}
+                <tr>
+                    <td>{{ question }}</td>
+                    <td>{{ answer }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <h3>Predicted Diseases</h3>
+            <table>
+                <tr>
+                    <th>Disease</th>
+                    <th>Percentage</th>
+                    <th>Description</th>
+                </tr>
+                {% for disease in prediction.diseases %}
+                <tr>
+                    <td>{{ disease.name }}</td>
+                    <td>{{ disease.accuracy | round(2) }}%</td>
+                    <td>{{ disease.description }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <h3>Precautions</h3>
+            <table>
+                <tr>
+                    <th>Disease</th>
+                    <th>Precautions</th>
+                </tr>
+                {% for disease in prediction.diseases %}
+                <tr>
+                    <td>{{ disease.name }}</td>
+                    <td>{{ disease.precautions | join(', ') }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <p class="centered"><em>“{{ prediction.quote }}”</em></p>
+            <div class="form-actions">
+                <a href="{{ url_for('dashboard') }}" class="btn back-btn">Back</a>
+                <a href="{{ url_for('download_report', report_id=prediction._id) }}" class="btn next-btn">Download PDF</a>
+            </div>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

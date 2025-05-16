@@ -7,9 +7,9 @@ import pickle
 import os
 
 # Load dataset
-df = pd.read_csv('datasets/dataset.csv')
+df = pd.read_csv('E:/NM/Project/project/datasets/dataset.csv')
 
-# Fill missing values
+# Fill missing values/
 df = df.fillna('')  # Replace NaNs with empty strings
 
 # Combine all symptom columns into one set
@@ -33,7 +33,7 @@ X.columns = all_symptoms
 
 # Encode target (disease)
 encoder = LabelEncoder()
-y = encoder.fit_transform(df['Disease'])  # Replace 'Disease' with the exact name of your label column if needed
+y = encoder.fit_transform(df['Disease'])
 
 # Train/test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

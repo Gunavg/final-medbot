@@ -1,0 +1,22 @@
+Symptom,Question,Answer_Type,Possible_Answers,Weight
+skin_rash,How long have you had the rash?,numeric,,0.2
+skin_rash,Is the rash itchy or painful?,multiple_choice,Itchy;Painful;Both;Neither,0.3
+skin_rash,Does the rash spread to other areas?,yes_no,,0.2
+headache,How severe is your headache on a scale of 1-10?,numeric,,0.3
+headache,Does the headache occur on one side or both?,multiple_choice,One side;Both sides,0.2
+headache,Do you experience nausea with the headache?,yes_no,,0.2
+fever,What is your current body temperature (in °C)?,numeric,,0.3
+fever,Have you had chills or sweating with the fever?,yes_no,,0.2
+fever,How many days have you had the fever?,numeric,,0.2
+cough,Is your cough dry or productive (with phlegm)?,multiple_choice,Dry;Productive,0.3
+cough,Do you experience chest pain when coughing?,yes_no,,0.2
+cough,How long have you had the cough?,numeric,,0.2
+fatigue,Do you feel fatigued even after resting?,yes_no,,0.2
+fatigue,Have you noticed weight loss with fatigue?,yes_no,,0.2
+fatigue,How long have you felt fatigued (in days)?,numeric,,0.2
+joint_pain,Is the joint pain worse in the morning?,yes_no,,0.2
+joint_pain,Do you have swelling around the painful joints?,yes_no,,0.2
+joint_pain,Which joints are affected?,multiple_choice,Knees;Hands;Hips;Others,0.3
+nausea,Do you experience vomiting with nausea?,yes_no,,0.2
+nausea,Have you eaten anything unusual recently?,yes_no,,0.2
+nausea,How long have you felt nauseous (in hours)?,numeric,,0.2

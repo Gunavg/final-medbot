@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - MedBot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="{{ url_for('static', filename='caduceus.png') }}" alt="Caduceus" class="logo">
+            <h1>User Profile</h1>
+            <nav>
+                <div class="header-right">
+                    <button class="dark-mode-toggle">🌙</button>
+                    <div class="menu-icon">☰</div>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                    <li><a href="{{ url_for('dashboard') }}">View Reports</a></li>
+                    <li><a href="{{ url_for('symptoms') }}">New Diagnosis</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <h2>Edit Profile</h2>
+            <form method="POST" action="{{ url_for('profile') }}">
+                <div class="form-row">
+                    <label for="firstname">First Name <span class="mandatory"></span></label>
+                    <input type="text" id="firstname" name="firstname" value="{{ user.firstname }}" required>
+                </div>
+                <div class="form-row">
+                    <label for="lastname">Last Name</label>
+                    <input type="text" id="lastname" name="lastname" value="{{ user.lastname or '' }}">
+                </div>
+                <div class="form-row">
+                    <label for="email">Email <span class="mandatory"></span></label>
+                    <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+                <div class="form-row">
+                    <label for="age">Age <span class="mandatory"></span></label>
+                    <input type="number" id="age" name="age" value="{{ user.age or '' }}" required>
+                </div>
+                <div class="form-row">
+                    <label for="gender">Gender <span class="mandatory"></span></label>
+                    <select id="gender" name="gender" required>
+                        <option value="" disabled {% if not user.gender %}selected{% endif %}>Select Gender</option>
+                        <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                        <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" value="{{ user.address or '' }}">
+                </div>
+                <div class="form-row">
+                    <label for="phonenumber">Phone Number</label>
+                    <input type="text" id="phonenumber" name="phonenumber" value="{{ user.phonenumber or '' }}">
+                </div>
+                <div class="form-row">
+                    <label for="nationality">Nationality</label>
+                    <input type="text" id="nationality" name="nationality" value="{{ user.nationality or '' }}">
+                </div>
+                <div class="form-row">
+                    <label for="password">Change Password</label>
+                    <input type="password" id="password" name="password">
+                    <p class="password-restrictions">Password must be at least 6 characters, including uppercase, lowercase, and digits (0-9).</p>
+                </div>
+                <div class="form-actions">
+                    <a href="{{ url_for('dashboard') }}" class="btn back-btn">Back</a>
+                    <input type="submit" value="Save" class="btn next-btn">
+                </div>
+            </form>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
